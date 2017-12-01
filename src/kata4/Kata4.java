@@ -17,8 +17,12 @@ public class Kata4 {
     
     private String filename;
     private List<Mail> mailList;
+    
     private Histogram<String> histogram;
     private static HistogramDisplay histoDisplay;
+    private MailHistogramBuilder<Mail> builder;
+    private Histogram<String> domains;
+    private Histogram<Character> letters;
         
     private void execute() throws Exception{
         input();
@@ -27,16 +31,32 @@ public class Kata4 {
     }
     
     private void input() throws IOException{
-        filename = "/Users/DaniMangtani/NetBeansProjects/Kata4/emails.txt";
+        filename = "/Users/DaniMangtani/NetBeansProjects/Kata6/emails.txt";
         mailList = MailListReader.read(filename);
+        builder = new MailHistogramBuilder<Mail>(mailList);
+        
     }
     
-    private void process() throws Exception{
-        histogram = MailHistogramBuilder.build(mailList);
+    private void process(){
+        domains = builder.build(new Attribute<Mail, String>() {
+        @Override
+        public String get(Mail item) {
+            return item.getMail().split("@")[1];
+        }
+    });
+        
+    letters = builder.build(new Attribute<Mail, Character>() {
+        @Override
+        public Character get(Mail item) {
+            return item.getMail().charAt(0);
+        }
+    });
     }
     
     private void output(){
-        histoDisplay = new HistogramDisplay(histogram);
+        new HistogramDisplay(domains, "Dominios").execute();
+        new HistogramDisplay (letters,"Primer Caracter").execute();
         histoDisplay.execute();
     }
+
 }
